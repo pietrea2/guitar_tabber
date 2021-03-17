@@ -2,34 +2,46 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <windows.h>
+#include <shellapi.h>
 
 using namespace std;
 
 int main(){
 	
   ofstream file;
-  file.open ("Guitar Tab Test Example.txt");
+  file.open ("Guitar Tab Test Example w spaces.txt");
   
-  //Create and open a text file
-  //ofstream MyFile("filename.txt");
-  //Write to the file
-  //MyFile << "Files can be tricky, but it is fun enough!";
+//ShellExecute(0, 0, "http://www.google.com", 0, 0 , SW_SHOW );
   
   int strings = 6;
-  int line_length = 100;
+  int tab_line_length = 100;
   string tuning;
   char tuning_char[20];
   
-  char stand[6] = {'e', 'a', 'd', 'g', 'b', 'e'};
-  char drop_d[6] = {'d', 'a', 'd', 'g', 'b', 'e'};
-  string drop_c_sharp[6] = {"c#", "ab", "db", "gb", "bb", "eb"};
+  std::vector<int> chord_frets (6);
+  std::vector< vector<int> > chord_fret_lib;
+  int num_of_chords = 0;
+  string next_finish = "next";
+  string chord_spaces;
+  std::vector< string > chord_spaces_lib;
+  
+  //Standard Tunings
+  char stand[6] = {'E', 'A', 'D', 'G', 'B', 'e'};
+  string half_step_down[6] = {"Eb", "Ab", "Db", "Gb", "Bb", "Eb"};
+  char full_step_down[6] = {'D', 'G', 'C', 'F', 'A', 'D'};
+  
+  //Drop Tunings
+  char drop_d[6] = {'D', 'A', 'D', 'G', 'B', 'e'};
+  string drop_c_sharp[6] = {"C#", "Ab", "Db", "Gb", "Bb", "Eb"};
+  string drop_d_flat[6] = {"Db", "Ab", "Db", "Gb", "Bb", "Eb"};
+  char drop_c[6] = {'C', 'G', 'C', 'F', 'A', 'D'};
   
   cout << "Hello!" << endl;
   cout << "What guitar tuning does this song use?" << endl;
   cout << "1. Standard" << endl;
   cout << "2. Drop D" << endl;
   cout << "3. Drop C#" << endl;
-  //cin >> tuning_char; 
   getline(cin, tuning); //reads all words and spacings YAYAYAYAY!
   
   cout << endl << "Wow! That's an awesome guitar tuning aha!" << endl;
@@ -42,50 +54,49 @@ int main(){
   getline(cin, song_name);
   cout << "Sounds cool! And I didn't ever hear the song yet!" << endl << endl;
   
-  
-  cout << endl << "Enter your fret fingerings starting with the lowest string to the highest, one chord at a time.";
+  cout << endl << "Enter your fret fingerings starting with the lowest ";
+  cout << "string to the highest, one chord at a time.";
   cout << endl << "Let's try it out:" << endl;
-  //cout << "1st chord:";
-  int a, b, c, d, e, f;
-  std::vector<int> chord_frets (6);
-  std::vector< vector<int> > chord_fret_lib;
-  std::vector<int> chord (5);
-  int num_of_chords = 0;
-  string next_finish = "next";
-  //cin >> a >> b >> c >> d >> e >> f;
+
   
   while(next_finish != "finish"){
   
-  cout << "Chord #" << num_of_chords+1 << ": ";
-  cin >> chord_frets[0] >> chord_frets[1] >> chord_frets[2] >> chord_frets[3] >> chord_frets[4] >> chord_frets[5];
-  chord_fret_lib.push_back(chord_frets);
-  cout << "next of finish? ";
-  cin >> next_finish;
-  num_of_chords++;
+	  cout << "Chord #" << num_of_chords+1 << ": ";
+	  cin >> chord_frets[0] >> chord_frets[1] >> chord_frets[2];
+	  cin >> chord_frets[3] >> chord_frets[4] >> chord_frets[5];
+	  chord_fret_lib.push_back(chord_frets);
+	  cout << "Length of chord: (short, long): ";
+	  cin.ignore();
+	  getline(cin, chord_spaces);
+	
+	  cout << "next ot finish? ";
+	  cin >> next_finish;
+	  num_of_chords++;
+	  chord_spaces_lib.push_back(chord_spaces);
   
   }
-  //cout << "You entered the chord:" << a << b << c << d << e << f << endl;
-  cout << "You entered the chords:" << endl;
   
+  cout << "You entered the chords:" << endl;
   for(int i = 0; i < num_of_chords; i++ ){
   	for(int z = 0; z < 6; z++){
-  		cout << chord_fret_lib[i][z];
+  		cout << chord_fret_lib[i][z] << " ";
   	}
   	cout << endl;
   	
   }
-  //chord_frets[0] << chord_frets[1] << chord_frets[2] << chord_frets[3] << chord_frets[4] << chord_frets[5] << endl;
+
 
 
 
 ////////////////////////////////////////////////////
 //Printing the guitar tab file
 
-
 int printed_chords;
 
+file << "-------------------------------------------" << endl;
 file << "Band/artist: " << artist_name << endl;
-file << "Song Name: " << song_name << endl << endl << endl;
+file << "Song Name: " << song_name << endl;
+file << "-------------------------------------------" << endl << endl << endl;
 
   for(int s = 0; s < strings; s++){
   	
@@ -102,18 +113,24 @@ file << "Song Name: " << song_name << endl << endl << endl;
   	}  	
   	
   	
-	  for(int i = 0; i < line_length; i++){
-	  	file << "--";
+  	
+	  for(int i = 0; i < tab_line_length; i++){
 	  	
 	  	if( printed_chords != num_of_chords){
 		  	for (int x = 0; x < num_of_chords; x++){
-		  		file << chord_fret_lib[x][5-s] << "--";
+		  		file << chord_fret_lib[x][5-s];
+		  		
+		  		int print_spaces;
+		  		if(chord_spaces_lib[x] == "short") print_spaces = 4;
+		  		else if(chord_spaces_lib[x] == "long") print_spaces = 8;
+		  		for(int y = 0; y < print_spaces; y++){
+		  			file << "-";
+		  		}
+		  		
 		  		printed_chords++;
 		  	}
 	  	}
-	  	/*if(i == 3){
-	  		file << chord_frets[5-s];
-	  	}*/
+	  	
 	  }
 	  
 	  
