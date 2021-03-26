@@ -4,6 +4,7 @@
 #include <vector>
 #include <windows.h>
 #include <shellapi.h>
+#include <C:\Users\adamp\Documents\C - OpenGL Tests\guitar-tabber-functions.cpp>
 
 using namespace std;
 
@@ -19,6 +20,7 @@ int main(){
   string tuning;
   char tuning_char[20];
   
+  string artist_name, song_name;
   std::vector<int> chord_frets (6);
   std::vector< vector<int> > chord_fret_lib;
   int num_of_chords = 0;
@@ -37,26 +39,13 @@ int main(){
   string drop_d_flat[6] = {"Db", "Ab", "Db", "Gb", "Bb", "Eb"};
   char drop_c[6] = {'C', 'G', 'C', 'F', 'A', 'D'};
   
-  cout << "Hello!" << endl;
-  cout << "What guitar tuning does this song use?" << endl;
-  cout << "1. Standard" << endl;
-  cout << "2. Drop D" << endl;
-  cout << "3. Drop C#" << endl;
+  menu_1();
   getline(cin, tuning); //reads all words and spacings YAYAYAYAY!
-  
-  cout << endl << "Wow! That's an awesome guitar tuning aha!" << endl;
-  cout << "Now let's start writing your guitar tab:" << endl;
-  
-  string artist_name, song_name;
-  cout << "But first, who is this song by? (Band/artist): ";
+  menu_2();
   getline(cin, artist_name);
   cout << "WOW! I LOVE THAT ARTIST! And what is the song name?: ";
   getline(cin, song_name);
-  cout << "Sounds cool! And I didn't ever hear the song yet!" << endl << endl;
-  
-  cout << endl << "Enter your fret fingerings starting with the lowest ";
-  cout << "string to the highest, one chord at a time.";
-  cout << endl << "Let's try it out:" << endl;
+  menu_3();
 
   
   while(next_finish != "finish"){
@@ -69,7 +58,7 @@ int main(){
 	  cin.ignore();
 	  getline(cin, chord_spaces);
 	
-	  cout << "next ot finish? ";
+	  cout << "next or finish? ";
 	  cin >> next_finish;
 	  num_of_chords++;
 	  chord_spaces_lib.push_back(chord_spaces);
